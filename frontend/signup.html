@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+    <link rel="stylesheet" href="path/to/your/css/styles.css"> <!-- Replace with your CSS file -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="static/css/tailwind.css">
+</head>
+
+<body class="bg-gray-100">
+    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
+        <div class="flex items-center ">
+            <a class="flex items-center gap-2" href="/">
+                <img class="h-6" src="static/logo.svg" alt="Logo" /> <!-- Replace with your logo path -->
+                <span class="text-lg font-bold">Real-Time Chat</span>
+            </a>
+            <div id="online-user-count"></div>
+        </div>
+        <nav class="block bg-gray-800 relative">
+            <ul class="navitems flex items-center justify-center h-full">
+                <li><a href="/login" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Login</a></li>
+                <li><a href="/signup?next=/profile-onboarding" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Signup</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <content class="block max-w-3xl mx-auto md:p-12">
+        <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
+
+
+
+            <h1>
+
+                Sign Up
+
+            </h1>
+
+            <p>
+                Already have an account? Then please <a href="/accounts/login/?next=%2Fprofile%2Fonboarding%2F">sign
+                    in</a>.
+            </p>
+
+
+            <form method="post" action="/accounts/signup/">
+
+                <input type="hidden">
+                <p>
+                    <label for="id_email">Email:</label>
+                    <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320"
+                        required="" id="id_email">
+
+
+                </p>
+
+
+                <p>
+                    <label for="id_username">Username:</label>
+                    <input type="text" name="username" placeholder="Username" autocomplete="username" minlength="1"
+                        maxlength="150" required="" id="id_username">
+
+
+                </p>
+
+
+                <p>
+                    <label for="id_password1">Password:</label>
+                    <input type="password" name="password1" placeholder="Password" autocomplete="new-password"
+                        required="" aria-describedby="id_password1_helptext" id="id_password1">
+
+                    <span class="helptext" id="id_password1_helptext"></span>
+                </p>
+                <ul>
+                    <li>Your password can’t be too similar to your other personal information.</li>
+                    <li>Your password must contain at least 8 characters.</li>
+                    <li>Your password can’t be a commonly used password.</li>
+                    <li>Your password can’t be entirely numeric.</li>
+                </ul>
+
+
+                <p></p>
+
+
+                <p>
+                    <label for="id_password2">Password (again):</label>
+                    <input type="password" name="password2" placeholder="Password (again)" autocomplete="new-password"
+                        required="" id="id_password2">
+
+
+
+
+                </p>
+
+
+                <input type="hidden" name="next" value="/profile/onboarding/">
+
+
+
+
+
+                <button type="submit">
+
+                    Sign Up
+
+                </button>
+
+
+            </form>
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    </content>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.href = data.redirect_url || '/';
+                    } else {
+                        alert('Login failed: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 // tailwind.config.js
 module.exports = {
     content: [
-      './frontend/**/*.html',
+      './**/*.html',
       './frontend/static/js/**/*.js',
     ],
     theme: {
