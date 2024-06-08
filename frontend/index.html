@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Chat</title>
+    <link rel="icon" type="image/x-icon" href="path/to/favicon.ico">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="path/to/htmx.js"></script>
+    <script src="path/to/ws.js"></script>
+    <script src="https://unpkg.com/hyperscript.org@0.9.12"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="static/css/tailwind.css">
+</head>
+<body class="">
+    <div x-data="{ showMessage: false }">
+        <div class="absolute left-0 right-0 max-w-xl mx-auto mt-3 px-4 z-50 ">
+            <div x-cloak class="alert- flex items-center py-3 pl-6 pr-4 bg-blue-500 text-white rounded-lg" role="alert"
+                x-show="showMessage" 
+                x-init="setTimeout(() => showMessage = true, 200), setTimeout(() => showMessage = false, 6000)"
+                x-transition:enter="duration-700 ease-out"
+                x-transition:enter-start="opacity-0 -translate-y-5"
+                x-transition:enter-end="opacity-100 translate-y-0"
+                x-transition:leave="duration-200 ease-in"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 -translate-y-5">
+                <div>
+                    <div class="text-lg"></div>
+                </div>
+                <div class="ml-auto cursor-pointer" @click="showMessage = false">
+                    <svg fill="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" viewBox="0 0 24 24" stroke="currentColor" class="w-8 h-8 ml-2">
+                        <path d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </div>
+            </div> 
+        </div>
+    </div>
+    
+    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
+        <div class="flex items-center">
+            <a class="flex items-center gap-2" href="/">
+                <img class="h-6" src="path/to/logo.svg" alt="Logo"/>
+                <span class="text-lg font-bold">Real-Time Chat</span>
+            </a>
+           
+        </div>
+        <nav class="block bg-gray-800 relative">
+            <ul class="navitems flex items-center justify-center h-full">
+                <!-- Use JavaScript to handle authentication status and user data
+                <li x-data="{ dropdownChatOpen: false }" class="relative">
+                    <a @click="dropdownChatOpen = !dropdownChatOpen" @click.away="dropdownChatOpen = false" class="cursor-pointer select-none">
+                        <div id="online-in-chats"></div>
+                        Chat
+                        <img x-bind:class="dropdownChatOpen && 'rotate-180 duration-300'" class="w-4" src="https://img.icons8.com/small/32/777777/expand-arrow.png"/>
+                    </a>
+                    <div x-show="dropdownChatOpen" x-cloak class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+                    x-transition:enter="duration-300 ease-out"
+                    x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
+                    x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                        <ul id="chats-list"></ul>   
+                    </div>
+                </li>
+                <li x-data="{ dropdownOpen: false }" class="relative">
+                    <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
+                        <img class="h-8 w-8 rounded-full object-cover" src="path/to/user-avatar.jpg" alt="User Avatar"/>
+                        <span>User Name</span>
+                        <img x-bind:class="dropdownOpen && 'rotate-180 duration-300'" class="w-4" src="https://img.icons8.com/small/32/777777/expand-arrow.png"/>
+                    </a>
+                    <div x-show="dropdownOpen" x-cloak class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
+                    x-transition:enter="duration-300 ease-out"
+                    x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
+                    x-transition:enter-end="opacity-100 translate-y-0 scale-100">
+                        <ul class="hoverlist [&>li>a]:justify-end">
+                            <li><a href="/profile">My Profile</a></li>
+                            <li><a href="/profile/edit">Edit Profile</a></li>
+                            <li><a href="/chat/new">Create Chat</a></li>
+                            <li><a href="/profile/settings">Settings</a></li>
+                            <li><a href="/logout">Log Out</a></li>
+                        </ul>
+                    </div>
+                </li> -->
+                <li><a href="/login">Login</a></li>
+                <li><a href="/signup">Signup</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="block w-full">
+        <section class="block w-full">
+            <!-- Content goes here -->
+        </section>
+    </main>
+
+    <footer class="block w-full">
+        <!-- Footer content goes here -->
+    </footer>
+    <script src="static/js/main.js"></script>
+</body>
+</html>
