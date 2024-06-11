@@ -39,7 +39,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'monitoring',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'rest_framework_swagger',       # Swagger
+    'rest_framework_simplejwt',
+    'dj_rest_auth',
 ]
 
 MIDDLEWARE = [
