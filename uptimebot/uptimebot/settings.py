@@ -176,6 +176,12 @@ REST_FRAMEWORK = {
     ),
 }
 
+REST_AUTH = {
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'uptimebot-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'uptimebot-refresh-token',
+}
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
