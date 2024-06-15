@@ -22,6 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 from django.conf import settings
+from allauth.account.views import ConfirmEmailView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -36,5 +37,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('dj-rest-auth/', include('dj_rest_auth.urls')),
     path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('confirm-email/<str:key>/', ConfirmEmailView.as_view(),
+         name='account_confirm_email'),
 
 ]
