@@ -165,7 +165,8 @@ REST_USE_JWT = True
 
 ACCOUNT_EMAIL_VERIFICATION = 'django.core.mail.backends.console.EmailBackend'
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
 
 
 from datetime import timedelta

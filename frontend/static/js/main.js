@@ -32,8 +32,11 @@ async function register(username, password, email) {
         const error = await response.json();
         throw new Error(error);
     }
-
-    return await response.json();
+    
+    const data = await response.json();
+    localStorage.setItem('accessToken', data.access);
+    localStorage.setItem('refreshToken', data.refresh);
+    return data;
 }
 
 async function login(username, password) {
