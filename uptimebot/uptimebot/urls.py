@@ -35,8 +35,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
-    path('dj-rest-auth/', include('dj_rest_auth.urls')),
-    path('dj-rest-auth/registration/', include('dj_rest_auth.registration.urls')),
+    path('account/', include('dj_rest_auth.urls')),
+    path('account/registration/', include('dj_rest_auth.registration.urls')),
     path('confirm-email/<str:key>/', ConfirmEmailView.as_view(),
          name='account_confirm_email'),
 
