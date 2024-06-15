@@ -1,21 +1,21 @@
 // frontend/static/js/main.js
-document.addEventListener('DOMContentLoaded', function () {
-    fetch('/api/yourmodel/')
-        .then(response => response.json())
-        .then(data => {
-            const container = document.getElementById('data-container');
-            data.forEach(item => {
-                const p = document.createElement('p');
-                p.textContent = item.name; // جایگزین با فیلدهای مدل خود
-                container.appendChild(p);
-            });
-        })
-        .catch(error => console.error('Error:', error));
-});
+// document.addEventListener('DOMContentLoaded', function () {
+//     fetch('/api/yourmodel/')
+//         .then(response => response.json())
+//         .then(data => {
+//             const container = document.getElementById('data-container');
+//             data.forEach(item => {
+//                 const p = document.createElement('p');
+//                 p.textContent = item.name; // جایگزین با فیلدهای مدل خود
+//                 container.appendChild(p);
+//             });
+//         })
+//         .catch(error => console.error('Error:', error));
+// });
 
 
 async function register(username, password, email) {
-    const response = await fetch('/api/auth/registration/', {
+    const response = await fetch("http://127.0.0.1:8000/account/registration/", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -32,7 +32,7 @@ async function register(username, password, email) {
         const error = await response.json();
         throw new Error(error);
     }
-    
+
     const data = await response.json();
     localStorage.setItem('accessToken', data.access);
     localStorage.setItem('refreshToken', data.refresh);
@@ -40,13 +40,13 @@ async function register(username, password, email) {
 }
 
 async function login(username, password) {
-    const response = await fetch('/api/auth/login/', {
+    const response = await fetch('http://127.0.0.1:8000/account/login/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            username: username,
+            email: username,
             password: password
         })
     });
@@ -228,33 +228,35 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 // اضافه کردن لیسنر به فرم ثبت‌نام
-const registerForm = document.getElementById('register-form');
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = document.getElementById('id-username').value;
-    const password1 = document.getElementById('id-password1').value;
-    const password2 = document.getElementById('id-password2').value;
-    const email = document.getElementById('id-email').value;
-    if(password1 !== password2) {
-        console.error("Passwords do not match!")
-    }
-    try {
-        const data = await register(username, password1, email);
-        console.log('Registered:', data);
-    } catch (error) {
-        console.error('Error registering:', error);
-    }
-});
+// const registerForm = document.getElementById('register-form');
+// registerForm.addEventListener('submit', async (e) => {
+//     e.preventDefault();
+//     const username = document.getElementById('id-username').value;
+//     const password1 = document.getElementById('id-password1').value;
+//     const password2 = document.getElementById('id-password2').value;
+//     const email = document.getElementById('id-email').value;
+//     if(password1 !== password2) {
+//         console.error("Passwords do not match!")
+//     }
+//     try {
+//         const data = await register(username, password1, email);
+//         console.log('Registered:', data);
+//     } catch (error) {
+//         console.error('Error registering:', error);
+//     }
+// });
 
 // اضافه کردن لیسنر به فرم ورود
 const loginForm = document.getElementById('login-form');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('id-login').value;
-    const password = document.getElementById('id-password').value;
+    const formdata = new FormData(loginForm);
+    const username = formdata.get('login');
+    const password = formdata.get('password');
     try {
         const data = await login(username, password);
         console.log('Logged in:', data);
+        window.location.href ='index.html';
     } catch (error) {
         console.error('Error logging in:', error);
     }
