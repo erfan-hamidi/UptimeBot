@@ -223,6 +223,7 @@ registerForm.addEventListener('submit', async (e) => {
     const password2 = formdata.get('password2');
     const email = formdata.get('email');
     const passwordStrengthMessages = document.getElementById('password-strength-messages');
+    passwordStrengthMessages.style.display = 'none';
     if(password1 !== password2) {
         passwordStrengthMessages.innerHTML = '<li style="color:red;">Passwords do not match!</li>';
         passwordStrengthMessages.style.display = 'block';
