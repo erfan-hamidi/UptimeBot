@@ -25,16 +25,22 @@ from django.conf import settings
 from allauth.account.views import ConfirmEmailView
 
 schema_view = get_schema_view(
-    openapi.Info(
-        title="Episyche Technologies",
-        default_version='v1',),
-    public=True,
-    permission_classes=(permissions.AllowAny,),
+   openapi.Info(
+      title="Web Monitoring API",
+      default_version='v1',
+      description="API documentation for the Web Monitoring service",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="contact@example.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
 )
 
 urlpatterns = [
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
+    path('monitor/', include('monitoring.urls')),
     path('account/', include('dj_rest_auth.urls')),
     path('account/registration/', include('dj_rest_auth.registration.urls')),
     path('confirm-email/<str:key>/', ConfirmEmailView.as_view(),
