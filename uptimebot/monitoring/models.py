@@ -20,7 +20,7 @@ class Check(models.Model):
         return f"Check for {self.monitor.name} at {self.timestamp}"
 
 class CheckResult(models.Model):
-    check = models.ForeignKey(Check, on_delete=models.CASCADE)
+    check_instance = models.ForeignKey('Check', on_delete=models.CASCADE)
     status_code = models.IntegerField()
     response_time = models.FloatField(help_text="Response time in seconds")
     is_up = models.BooleanField()
@@ -28,7 +28,8 @@ class CheckResult(models.Model):
     headers = models.JSONField(null=True, blank=True)
 
     def __str__(self):
-        return f"Result for {self.check} - {'Up' if self.is_up else 'Down'}"
+        return f"Result for {self.check_instance} - {'Up' if self.is_up else 'Down'}"
+
 
 class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
