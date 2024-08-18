@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In</title>
+    <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+    <!-- <link rel="stylesheet" href="path/to/your/css/styles.css"> Replace with your CSS file -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script> -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link rel="stylesheet" href="static/css/tailwind.css">
+    
+</head>
+
+<body class="bg-gray-100">
+    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
+        <div class="flex items-center ">
+            <a class="flex items-center gap-2" href="/">
+                <img class="h-6" src="static/logo.svg" alt="Logo" /> <!-- Replace with your logo path -->
+                <span class="text-lg font-bold">Real-Time Chat</span>
+            </a>
+            
+        </div>
+        <nav class="block bg-gray-800 relative">
+            <ul class="navitems flex items-center justify-center h-full">
+                <li><a href="login.html" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Login</a></li>
+                <li><a href="signup.html" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Signup</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <content class="block max-w-3xl mx-auto md:p-12">
+        <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
+
+            <h1>Sign In</h1>
+            <p> If you have not created an account yet, then please
+                <a href="signup.html">sign up</a> first.</p>
+            <form  id="login-form">
+
+                <input type="hidden">
+                <p>
+                    <label for="id_login">Email:</label>
+                    <input type="email" name="login" placeholder="Email address" autocomplete="email" maxlength="320"
+                        required id="id_login">
+                </p>
+                <p>
+                    <label for="id_password">Password:</label>
+                    <input type="password" name="password" placeholder="Password" autocomplete="current-password"
+                        required aria-describedby="id_password_helptext" id="id_password">
+                    <span class="helptext" id="id_password_helptext"><a href="/accounts/password/reset/">Forgot your
+                            password?</a></span>
+                </p>
+                <p>
+                    <label for="id_remember">Remember Me:</label>
+                    <input type="checkbox" name="remember" id="id_remember">
+                </p>
+
+                <input type="hidden" name="next" value="/" />
+
+                <button type="submit">
+
+                    Sign In
+
+                </button>
+
+            </form>
+
+        </div>
+    </content>
+    <script src="static/js/main.js"></script>
+</body>
+
+</html>
