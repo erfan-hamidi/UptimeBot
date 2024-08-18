@@ -6,7 +6,7 @@
 //             const container = document.getElementById('data-container');
 //             data.forEach(item => {
 //                 const p = document.createElement('p');
-//                 p.textContent = item.name; // جایگزین با فیلدهای مدل خود
+//                 p.textContent = item.name; 
 //                 container.appendChild(p);
 //             });
 //         })
@@ -195,7 +195,7 @@ async function fetchWithAuth(url, options = {}) {
     let token = localStorage.getItem('accessToken');
     const now = Math.floor(Date.now() / 1000);
 
-    // چک کردن زمان انقضای توکن
+    // Check token expiration time
     const tokenExp = JSON.parse(atob(token.split('.')[1])).exp;
     if (tokenExp < now) {
         token = await refreshToken();
@@ -213,7 +213,7 @@ async function fetchWithAuth(url, options = {}) {
     });
 }
 
-// اضافه کردن لیسنر به فرم ثبت‌نام
+// Add the list to the registration form
 const registerForm = document.getElementById('register-form');
 registerForm.addEventListener('submit', async (e) => {
     e.preventDefault();
