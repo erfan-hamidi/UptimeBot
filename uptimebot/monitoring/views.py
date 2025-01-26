@@ -1,9 +1,9 @@
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Monitor, Check, CheckResult
-from .serializers import MonitorSerializer, CheckSerializer, CheckResultSerializer
-from .tasks import perform_check
+from .models import *
+from .serializers import *
+#from .tasks import perform_check
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
@@ -31,16 +31,16 @@ class MonitorViewSet(viewsets.ModelViewSet):
         return Response({'status': 'Check initiated'}, status=status.HTTP_202_ACCEPTED)
 
 class CheckViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Check.objects.all()
-    serializer_class = CheckSerializer
+    queryset = MonitorCheck.objects.all()
+    serializer_class = MonitorCheckSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Check.objects.filter(monitor__user=self.request.user)
 
 class CheckResultViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = CheckResult.objects.all()
-    serializer_class = CheckResultSerializer
+    queryset = Alert.objects.all()
+    serializer_class = AlertSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):

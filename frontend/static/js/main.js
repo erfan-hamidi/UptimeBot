@@ -245,7 +245,7 @@ registerForm.addEventListener('submit', async (e) => {
     }
 });
 
-// اضافه کردن لیسنر به فرم ورود
+
 const loginForm = document.getElementById('login-form');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
