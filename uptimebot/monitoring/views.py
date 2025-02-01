@@ -7,17 +7,20 @@ from .serializers import *
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
+from .tasks import check_monitor
 
 class MonitorViewSet(viewsets.ModelViewSet):
     queryset = Monitor.objects.all()
     serializer_class = MonitorSerializer
     permission_classes = [IsAuthenticated]
+    print()
 
     def get_queryset(self):
         return Monitor.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+        #check_monitor.delay(monitor.id)
 
     @swagger_auto_schema(
         method='post',
@@ -38,10 +41,10 @@ class CheckViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return Check.objects.filter(monitor__user=self.request.user)
 
-class CheckResultViewSet(viewsets.ReadOnlyModelViewSet):
+class CheckAlertViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Alert.objects.all()
     serializer_class = AlertSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return CheckResult.objects.filter(check_instance__monitor__user=self.request.user)
+        return CheckAlert.objects.filter(check_instance__monitor__user=self.request.user)
