@@ -23,7 +23,7 @@ from drf_yasg import openapi
 from rest_framework import permissions
 from django.conf import settings
 from allauth.account.views import ConfirmEmailView
-
+from drf_spectacular.views import SpectacularAPIView
 schema_view = get_schema_view(
    openapi.Info(
       title="Web Monitoring API",
@@ -38,6 +38,7 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', schema_view.with_ui('swagger', cache_timeout=0),name='schema-swagger-ui'),
     path('admin/', admin.site.urls),
     path('monitor/', include('monitoring.urls')),

@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'dj_rest_auth',
     'drf_yasg',
-    'django.contrib.sites',
+    #'django.contrib.sites',       # for production
     'allauth',
     'allauth.account',
     'allauth.socialaccount',

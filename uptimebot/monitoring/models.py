@@ -19,7 +19,7 @@ from django.contrib.auth.models import User
 #     def __str__(self):
 #         return f"Check for {self.monitor.name} at {self.timestamp}"
 
-# class CheckResult(models.Model):
+# class CheckAlert(models.Model):
 #     check_instance = models.ForeignKey('Check', on_delete=models.CASCADE)
 #     status_code = models.IntegerField()
 #     response_time = models.FloatField(help_text="Response time in seconds")

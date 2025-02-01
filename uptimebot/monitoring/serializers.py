@@ -12,9 +12,9 @@ from .models import UserProfile, Monitor, MonitorCheck, Alert, Notification
 #         model = Check
 #         fields = ['id', 'monitor', 'timestamp']
 
-# class CheckResultSerializer(serializers.ModelSerializer):
+# class CheckAlertSerializer(serializers.ModelSerializer):
 #     class Meta:
-#         model = CheckResult
+#         model = CheckAlert
 #         fields = ['id', 'check_instance', 'status_code', 'response_time', 'is_up', 'response_body', 'headers']
 
 
@@ -28,6 +28,7 @@ class MonitorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Monitor
         fields = ['id', 'user', 'name', 'url', 'type', 'interval', 'status', 'last_checked']
+        read_only_fields = ['user', 'status', 'last_checked'] 
 
 class MonitorCheckSerializer(serializers.ModelSerializer):
     class Meta:
