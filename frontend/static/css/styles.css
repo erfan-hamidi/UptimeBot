@@ -3,6 +3,22 @@
 @tailwind components;
 @tailwind utilities;
 
+
+.custom-space {
+    margin-bottom: 40px; /* فاصله بین div ها */
+    margin-bottom: 30px;
+    gap: 10px;
+    display: grid;
+}
+
+.button-d {
+    margin-top: 20px;
+}
+
+.element {
+    gap: 10px;
+    display: grid;
+}
 [x-cloak] { 
     display: none !important; 
 }

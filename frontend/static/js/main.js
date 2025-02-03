@@ -386,3 +386,5 @@ function getPasswordStrength(password) {
         message: strengthMessage // Return the generated strength message
     };
 }
+
+
