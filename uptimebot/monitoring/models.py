@@ -47,6 +47,12 @@ from django.contrib.auth.models import User
 #         return self.name
 
 
+class AlertType(models.Model):
+    name = models.CharField(max_length=10, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone_number = models.CharField(max_length=15, blank=True, null=True)
@@ -63,7 +69,7 @@ class Monitor(models.Model):
         ('ping', 'Ping'),
         ('port', 'Port'),
     )
-
+    alert_types = models.ManyToManyField(AlertType)  # Many-to-many relationship
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     url = models.URLField()
@@ -94,7 +100,7 @@ class Alert(models.Model):
     )
 
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE)
-    alert_type = models.CharField(max_length=10, choices=ALERT_TYPES)
+    alert_type = models.ForeignKey(AlertType, on_delete=models.CASCADE)  # Reference AlertType
     sent_at = models.DateTimeField(auto_now_add=True)
     message = models.TextField()
 
