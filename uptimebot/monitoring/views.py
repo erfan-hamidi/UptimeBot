@@ -19,8 +19,8 @@ class MonitorViewSet(viewsets.ModelViewSet):
         return Monitor.objects.filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
-        #check_monitor.delay(monitor.id)
+        instance = serializer.save(user=self.request.user)
+        check_monitor.delay(instance.id)
 
     @swagger_auto_schema(
         method='post',

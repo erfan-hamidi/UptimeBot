@@ -6,6 +6,7 @@ from django.utils import timezone
 from .models import Monitor, MonitorCheck
 import requests
 
+@shared_task
 def check_monitor(monitor_id):
     """
     Task to check the status of a single monitor.
@@ -43,7 +44,7 @@ def check_monitor(monitor_id):
     monitor.last_checked = timezone.now()
     monitor.status = status
     monitor.save()
-
+    print(status)
     # Schedule the task to run again after the monitor's interval
     check_monitor.apply_async(args=[monitor_id], countdown=monitor.interval * 60)  # Convert minutes to seconds
 
