@@ -22,9 +22,9 @@
 [x-cloak] { 
     display: none !important; 
 }
-h1 {
-    @apply text-4xl font-bold mb-4
-}
+/* h1 {
+    @apply text-4xl font-bold mb-4;
+} */
 h2 {
     @apply text-xl font-bold mb-2
 }
