@@ -12,16 +12,21 @@
 
 <body class="bg-gray-100">
     <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-50 shadow-md">
-        <a class="flex items-center gap-2" href="/">
+        <a class="flex items-center gap-2" href="index.htm">
             <img class="h-6" src="static/logo.svg" alt="Logo" />
             <span class="text-lg font-bold">UptimeBot</span>
         </a>
-        <nav>
-            <ul class="flex gap-4">
-                <li><a href="login.htm" class="px-4 py-2 rounded-lg transition hover:bg-gray-700">Login</a></li>
-                <li><a href="signup.html" class="px-4 py-2 rounded-lg transition hover:bg-gray-700">Signup</a></li>
-            </ul>
-        </nav>
+        <div id="header-container"></div>
+        <script>
+            window.onload = function() {
+    fetch('static/html/header.htm')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header-container').innerHTML = data;
+        });
+};
+
+        </script>
     </header>
     <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
         <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
@@ -34,19 +39,19 @@
         </p>
         <form id="login-form" class="space-y-4">
             <div>
-                <label for="id_login" class="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" name="login" id="id_login" placeholder="Email address" autocomplete="email" 
+                <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="login" id="email" placeholder="Email address" autocomplete="email" 
                     required class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
             </div>
             <div>
-                <label for="id_password" class="block text-sm font-medium text-gray-700">Password</label>
-                <input type="password" name="password" id="id_password" placeholder="Password" autocomplete="current-password"
+                <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password"
                     required class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
                 <a href="/accounts/password/reset/" class="text-sm text-blue-600 hover:underline block mt-1">Forgot your password?</a>
             </div>
             <div class="flex items-center gap-2">
-                <input type="checkbox" name="remember" id="id_remember" class="rounded border-gray-300">
-                <label for="id_remember" class="text-sm text-gray-700">Remember Me</label>
+                <input type="checkbox" name="remember" id="rememberMe" class="rounded border-gray-300">
+                <label for="rememberMe" class="text-sm text-gray-700">Remember Me</label>
             </div>
             <input type="hidden" name="next" value="/" />
             <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium text-lg transition hover:bg-blue-700">

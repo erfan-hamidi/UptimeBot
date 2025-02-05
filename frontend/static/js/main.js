@@ -62,9 +62,11 @@ async function login(username, password, rememberMe) {
      if (rememberMe) {
         localStorage.setItem('accessToken', data.access);
         localStorage.setItem('refreshToken', data.refresh);
+        localStorage.setItem('username', username); 
     } else {
         sessionStorage.setItem('accessToken', data.access);
         sessionStorage.setItem('refreshToken', data.refresh);
+        localStorage.setItem('username', username); 
     }
 
     return data;

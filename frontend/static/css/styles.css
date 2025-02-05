@@ -15,10 +15,7 @@
     margin-top: 20px;
 }
 
-.element {
-    gap: 10px;
-    display: grid;
-}
+
 [x-cloak] { 
     display: none !important; 
 }

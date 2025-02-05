@@ -11,13 +11,13 @@
     <script src="path/to/htmx.js"></script>
     <script src="path/to/ws.js"></script>
     <script src="https://unpkg.com/hyperscript.org@0.9.12"></script> -->
-    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <!-- <link rel="stylesheet" href="static/css/tailwind.css"> -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="static/css/styles.css">
-    <link rel="stylesheet" href="static/css/tailwind.css">
 
 </head>
 
-<body>
+<body class="bg-gray-100">
 
 
     <div x-data=" showMessage: false ">
@@ -43,53 +43,27 @@
 
     <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
         <div class="flex items-center">
-            <a class="flex items-center gap-2" href="/">
-                <img class="h-6" src="static/logo.svg" alt="Logo" />
+            <a class="flex items-center gap-2" href="index.htm">
+                <img class="h-6" src="static/logo.svg" alt="Logo"/>
                 <span class="text-lg font-bold">UptimeBot</span>
             </a>
-
+           
         </div>
-        <nav class="block bg-gray-800 relative">
-            <ul class="navitems flex items-center justify-center h-full">
-                <!-- Use JavaScript to handle authentication status and user data
-            <li x-data="{ dropdownChatOpen: false }" class="relative">
-                <a @click="dropdownChatOpen = !dropdownChatOpen" @click.away="dropdownChatOpen = false" class="cursor-pointer select-none">
-                    <div id="online-in-chats"></div>
-                    Chat
-                    <img x-bind:class="dropdownChatOpen && 'rotate-180 duration-300'" class="w-4" src="https://img.icons8.com/small/32/777777/expand-arrow.png"/>
-                </a>
-                <div x-show="dropdownChatOpen" x-cloak class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
-                x-transition:enter="duration-300 ease-out"
-                x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
-                x-transition:enter-end="opacity-100 translate-y-0 scale-100">
-                    <ul id="chats-list"></ul>   
-                </div>
-            </li>
-            <li x-data="{ dropdownOpen: false }" class="relative">
-                <a @click="dropdownOpen = !dropdownOpen" @click.away="dropdownOpen = false" class="cursor-pointer select-none">
-                    <img class="h-8 w-8 rounded-full object-cover" src="path/to/user-avatar.jpg" alt="User Avatar"/>
-                    <span>User Name</span>
-                    <img x-bind:class="dropdownOpen && 'rotate-180 duration-300'" class="w-4" src="https://img.icons8.com/small/32/777777/expand-arrow.png"/>
-                </a>
-                <div x-show="dropdownOpen" x-cloak class="absolute right-0 bg-white text-black shadow rounded-lg w-40 p-2 z-20"
-                x-transition:enter="duration-300 ease-out"
-                x-transition:enter-start="opacity-0 -translate-y-5 scale-90"
-                x-transition:enter-end="opacity-100 translate-y-0 scale-100">
-                    <ul class="hoverlist [&>li>a]:justify-end">
-                        <li><a href="/profile">My Profile</a></li>
-                        <li><a href="/profile/edit">Edit Profile</a></li>
-                        <li><a href="/chat/new">Create Chat</a></li>
-                        <li><a href="/profile/settings">Settings</a></li>
-                        <li><a href="/logout">Log Out</a></li>
-                    </ul>
-                </div>
-            </li> -->
-                <li><a href="login.html">Login</a></li>
-                <li><a href="signup.html">Signup</a></li>
+        <nav>
+            <ul class="flex gap-4" id="auth-nav">
+                <li><a href="login.htm" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="login-link">Login</a></li>
+                <li><a href="signup.html" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="signup-link">Signup</a></li>
+            </ul>
+            <ul class="flex gap-4 hidden" id="user-nav">
+                <li id="username"></li>
+                <li><button class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="logout-button">Logout</button></li>
             </ul>
         </nav>
     </header>
 
+    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+        <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
     <main class="block w-full"></main>
         <content class="block max-w-3xl mx-auto md:p-12">
             <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
@@ -132,19 +106,19 @@
                         <!-- Email Checkbox -->
                         <div class="flex items-center mb-4">
                             <input type="checkbox" id="alert-email" name="alert-contacts" value="email" class="form-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="alert-email" class="block block ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Email</label>
+                            <label for="alert-email" class="block block ml-2 ms-2 text-sm font-medium text-black dark:text-black">Email</label>
                         </div>
                     
                         <!-- Phone Checkbox -->
                         <div class="flex items-center mb-4">
                             <input type="checkbox" id="alert-phone" name="alert-contacts" value="phone" class="form-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="alert-phone" class="block block ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Phone</label>
+                            <label for="alert-phone" class="block block ml-2 ms-2 text-sm font-medium text-black dark:text-black">Phone</label>
                         </div>
                     
                         <!-- SMS Checkbox -->
                         <div class="flex items-center mb-4">
                             <input type="checkbox" id="alert-sms" name="alert-contacts" value="sms" class="form-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded-sm focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                            <label for="alert-sms" class="block block ml-2 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">SMS</label>
+                            <label for="alert-sms" class="block block ml-2 ms-2 text-sm font-medium text-black dark:text-black">SMS</label>
                         </div>
                     </div>
                     <!-- <div class="flex items-center mb-4">
@@ -153,7 +127,7 @@
                     </div> -->
                     <!-- Submit Button -->
                     <div class="flex justify-center button-d">
-                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                             Create Monitor
                         </button>
                     </div>
@@ -170,7 +144,9 @@
         </content>
     </main>
 
-
+    <div class="absolute  inset-x-0 top-[calc(100%-13rem)] z-[-1] transform overflow-hidden blur-3xl sm:top-[calc(100%-45rem)]" aria-hidden="true">
+        <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-70 z-[-1] sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
     
     <footer class="block w-full">
         <!-- Footer content goes here -->
