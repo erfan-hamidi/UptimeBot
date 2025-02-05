@@ -7,120 +7,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
     <link rel="icon" type="image/x-icon" href="static/favicon.ico">
-    <link rel="stylesheet" href="path/to/your/css/styles.css"> <!-- Replace with your CSS file -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <script src="https://cdn.tailwindcss.com"></script> -->
-    <link rel="stylesheet" href="static/css/tailwind.css">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body class="bg-gray-100">
-    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
-        <div class="flex items-center ">
+    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-50 shadow-md">
+        <div class="flex items-center gap-4">
             <a class="flex items-center gap-2" href="/">
-                <img class="h-6" src="static/logo.svg" alt="Logo" /> <!-- Replace with your logo path -->
+                <img class="h-6" src="static/logo.svg" alt="Logo">
                 <span class="text-lg font-bold">UptimeBot</span>
             </a>
-            <div id="online-user-count"></div>
+            <div id="online-user-count" class="text-sm"></div>
         </div>
-        <nav class="block bg-gray-800 relative">
-            <ul class="navitems flex items-center justify-center h-full">
-                <li><a href="/login" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Login</a></li>
-                <li><a href="/signup?next=/profile-onboarding" class="px-4 py-2 hover:bg-gray-700 rounded-lg">Signup</a>
-                </li>
+        <nav>
+            <ul class="flex gap-4">
+                <li><a href="login.htm" class="px-4 py-2 rounded-lg transition hover:bg-gray-700">Login</a></li>
+                <li><a href="signup.html" class="px-4 py-2 rounded-lg transition hover:bg-gray-700">Signup</a></li>
             </ul>
         </nav>
     </header>
-    <content class="block max-w-3xl mx-auto md:p-12">
-        <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
-
-
-
-            <h1>
-
+    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+        <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
+    <main class="max-w-lg mx-auto my-12 p-8 bg-white rounded-2xl shadow-lg">
+        <h1 class="text-2xl font-bold text-center mb-4">Sign Up</h1>
+        <p class="text-gray-600 text-center mb-6">
+            Already have an account? <a href="login.htm"
+                class="text-blue-600 hover:underline">Sign in</a>.
+        </p>
+        <form id="register-form" class="space-y-4">
+            <div>
+                <label for="id_email" class="block text-sm font-medium text-gray-700">Email</label>
+                <input type="email" name="email" id="id_email" placeholder="Email address" autocomplete="email" required
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+                <label for="id_username" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" name="username" id="id_username" placeholder="Username" autocomplete="username"
+                    minlength="1" maxlength="150" required
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <div>
+                <label for="id_password1" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" name="password1" id="id_password1" placeholder="Password" autocomplete="new-password"
+                    required class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <span class="text-xs text-gray-500 block mt-1" id="id_password1_helptext"></span>
+            </div>
+            <ul id="password-strength-messages" class="text-sm text-red-600 hidden"></ul>
+            <div>
+                <label for="id_password2" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                <input type="password" name="password2" id="id_password2" placeholder="Password (again)"
+                    autocomplete="new-password" required
+                    class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+            </div>
+            <input type="hidden" name="next" value="/profile/onboarding/">
+            <button type="submit"
+                class="w-full bg-blue-600 text-white py-2 rounded-lg font-medium text-lg transition hover:bg-blue-700">
                 Sign Up
-
-            </h1>
-
-            <p>
-                Already have an account? Then please <a href="/accounts/login/?next=%2Fprofile%2Fonboarding%2F">sign
-                    in</a>.
-            </p>
-
-
-            <form id="register-form">
-
-                <input type="hidden">
-                <p>
-                    <label for="id_email">Email:</label>
-                    <input type="email" name="email" placeholder="Email address" autocomplete="email" maxlength="320"
-                        required="" id="id_email">
-
-
-                </p>
-
-
-                <p>
-                    <label for="id_username">Username:</label>
-                    <input type="text" name="username" placeholder="Username" autocomplete="username" minlength="1"
-                        maxlength="150" required="" id="id_username">
-
-
-                </p>
-
-
-                <p>
-                    <label for="id_password1">Password:</label>
-                    <input type="password" name="password1" placeholder="Password" autocomplete="new-password"
-                        required="" aria-describedby="id_password1_helptext" id="id_password1">
-
-                    <span class="helptext" id="id_password1_helptext"></span>
-                </p>
-                <ul id="password-strength-messages" style="display: none;">
-                    
-                </ul>
-
-
-                <p></p>
-
-
-                <p>
-                    <label for="id_password2">Password (again):</label>
-                    <input type="password" name="password2" placeholder="Password (again)" autocomplete="new-password"
-                        required="" id="id_password2">
-
-
-
-
-                </p>
-
-
-                <input type="hidden" name="next" value="/profile/onboarding/">
-
-
-
-
-
-                <button type="submit">
-
-                    Sign Up
-
-                </button>
-
-
-            </form>
-
-
-
-
-
-
-
-
-
-
-
-        </div>
-    </content>
+            </button>
+        </form>
+    </main>
+    <div class="absolute  inset-x-0 top-[calc(100%-13rem)] z-[-1] transform overflow-hidden blur-3xl sm:top-[calc(100%-45rem)]" aria-hidden="true">
+        <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-50 z-[-1] sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
     <script src="static/js/main.js"></script>
 </body>
 
