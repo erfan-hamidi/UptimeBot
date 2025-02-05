@@ -49,16 +49,12 @@
             </a>
            
         </div>
-        <nav>
-            <ul class="flex gap-4" id="auth-nav">
-                <li><a href="login.htm" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="login-link">Login</a></li>
-                <li><a href="signup.html" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="signup-link">Signup</a></li>
-            </ul>
-            <ul class="flex gap-4 hidden" id="user-nav">
-                <li id="username"></li>
-                <li><button class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="logout-button">Logout</button></li>
-            </ul>
-        </nav>
+        <div id="header-container"></div>
+        <script>
+            window.onload = function() {
+                loadHeader(); // Load header on page load
+            };
+        </script>
     </header>
 
     <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">

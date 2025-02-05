@@ -39,6 +39,74 @@ async function register(username, password, email) {
     return data;
 }
 
+function updateHeader() {
+    const username = localStorage.getItem('username') || sessionStorage.getItem('username');
+    
+    if (username) {
+        // Hide login and signup links
+        document.getElementById('login-link').style.display = 'none';
+        document.getElementById('signup-link').style.display = 'none';
+        
+        // Show the username
+        const usernameElement = document.getElementById('username');
+        usernameElement.textContent = `${username}`;
+        usernameElement.style.display = 'inline'; // Make sure the username is visible
+        
+        // Optionally, show the logout button
+        document.getElementById('logout-button').style.display = 'inline';
+    } else {
+        // Ensure login/signup links are visible if no username
+        document.getElementById('login-link').style.display = 'inline';
+        document.getElementById('signup-link').style.display = 'inline';
+        document.getElementById('username').style.display = 'none';
+        document.getElementById('logout-button').style.display = 'none';
+    }
+}
+
+function loadHeader() {
+    fetch('static/html/header.htm')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header-container').innerHTML = data;
+            updateHeader();  // Update the header after loading it
+        });
+}
+
+function logout() {
+    // Clear the stored username and tokens
+    localStorage.removeItem('username');
+    sessionStorage.removeItem('username');
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    sessionStorage.removeItem('refreshToken');
+
+    // Update the header to show login/signup links again
+    updateHeader();
+}
+
+
+document.getElementById('login-form').addEventListener('submit', async (event) => {
+    event.preventDefault(); // Prevent the default form submission
+
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const rememberMe = document.getElementById('rememberMe').checked;
+
+    try {
+        const data = await login(email, password, rememberMe);
+        console.log("Login successful:", data);
+
+        // Redirect to dashboard or another page
+        window.location.href = "login.htm";
+    } catch (error) {
+        console.error("Login failed:", error.message);
+
+        // Display an error message to the user
+        alert("Login failed: " + error.message);
+    }
+});
+
 async function login(username, password, rememberMe) {
     const response = await fetch('http://127.0.0.1:8000/account/login/', {
         method: 'POST',
@@ -50,14 +118,14 @@ async function login(username, password, rememberMe) {
             password: password
         })
     });
-
+    
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error);
     }
 
     const data = await response.json();
-
+    console.log(data.access)
      // Check if "Remember Me" is checked
      if (rememberMe) {
         localStorage.setItem('accessToken', data.access);
@@ -259,7 +327,7 @@ loginForm.addEventListener('submit', async (e) => {
     try {
         const data = await login(username, password, rememberMe);
         console.log('Logged in:', data);
-        window.location.href ='index.html';
+       // window.location.href ='login.htm';
     } catch (error) {
         console.error('Error logging in:', error);
     }

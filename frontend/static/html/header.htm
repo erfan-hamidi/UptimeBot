@@ -3,8 +3,8 @@
         <li><a href="login.htm" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="login-link">Login</a></li>
         <li><a href="signup.html" class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="signup-link">Signup</a></li>
     </ul>
-    <ul class="flex gap-4 hidden" id="user-nav">
-        <li id="username"></li>
-        <li><button class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="logout-button">Logout</button></li>
+    <ul class="flex gap-4" id="user-nav">
+        <li id="username" class="px-4 py-2 rounded-lg" style="display: none;"></li>
+        <li><button class="px-4 py-2 rounded-lg transition hover:bg-gray-700" id="logout-button" style="display: none;" onclick="logout()">Logout</button></li>
     </ul>
 </nav>
