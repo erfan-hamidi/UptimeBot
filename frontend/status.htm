@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Monitoring</title>
+    <link rel="icon" type="image/x-icon" href="static/favicon.ico">
+    <!-- Link to TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="static/js/main.js"></script>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Header -->
+    <header class="flex items-center justify-between bg-gray-700 h-20 px-8 text-white sticky top-0 z-40">
+        <div class="flex items-center">
+            <a class="flex items-center gap-2" href="index.htm">
+                <img class="h-6" src="static/logo.svg" alt="Logo" />
+                <span class="text-lg font-bold">UptimeBot</span>
+            </a>
+        </div>
+        <div id="header-container"></div>
+        <script>
+            window.onload = function () {
+                loadHeader(); // Load header on page load
+            };
+        </script>
+    </header>
+<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+        <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
+    
+    <main class="block w-full"></main>
+    <content class="block max-w-3xl mx-auto md:p-12 ">
+        <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
+            <!-- Monitoring Table -->
+            <section class="py-16">
+                <div class="container mx-auto px-6">
+                    <h2 class="text-3xl font-bold text-gray-800 mb-8">Monitored URLs</h2>
+                    <div class="pb-4 bg-white ">
+                        <label for="table-search" class="sr-only">Search</label>
+                        <div class="relative mt-1">
+                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                </svg>
+                            </div>
+                            <input type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-300 dark:border-gray-400 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for URLs" style="padding-bottom: 5px;
+">
+                        </div>
+                    </div>
+                    <!-- Search Bar -->
+                    <div class="container overflow-x-auto shadow-md sm:rounded-lg">
+                        
+
+                        <!-- Table -->
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-black uppercase bg-gray-50 dark:bg-gray-300 dark:text-black">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        URL
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Last Checked
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Response time
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="url-table-body" class="divide-y divide-gray-200">
+                                <!-- Rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </content>
+    </main>
+    <div class="absolute  inset-x-0 top-[calc(100%-13rem)] z-[-1] transform overflow-hidden blur-3xl sm:top-[calc(100%-45rem)]" aria-hidden="true">
+        <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-70 z-[-1] sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
+      </div>
+    
+    <!-- Footer -->
+    
+    <!-- JavaScript for Dynamic Updates -->
+    <script>
+        // Sample URLs to monitor
+        const urls = [
+            { url: "https://example.com", status: "up", lastChecked: new Date() },
+            { url: "https://google.com", status: "down", lastChecked: new Date() },
+            { url: "https://github.com", status: "up", lastChecked: new Date() },
+            
+        ];
+
+        // Function to generate the SVG rectangle
+        function getStatusIcon(status) {
+            const color = status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
+            return `
+        <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="3" height="12" x="0" y="0" fill="${color}" fill-opacity="1" rx="1.5" aria-expanded="true" />
+        </svg>
+      `;
+        }
+
+        // Function to update the table dynamically
+        function updateTable() {
+            const tableBody = document.getElementById("url-table-body");
+            tableBody.innerHTML = ""; // Clear existing rows
+            urls.forEach((item) => {
+                const row = `
+          <tr>
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.url}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex items-center space-x-2">
+                ${getStatusIcon(item.status)}
+                <span class="${item.status === 'up' ? 'text-green-600' : 'text-red-600'} font-medium">
+                  ${item.status === "up" ? "Up" : "Down"}
+                </span>
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              ${item.lastChecked.toLocaleTimeString()}
+            </td>
+            
+          </tr>
+        `;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        // Simulate monitoring every minute
+        setInterval(() => {
+            urls.forEach((item) => {
+                item.status = Math.random() > 0.2 ? "up" : "down"; // Randomly set status (80% chance of being "up")
+                item.lastChecked = new Date(); // Update last checked time
+            });
+            updateTable(); // Refresh the table
+        }, 60000); // Check every 60 seconds (1 minute)
+
+        // Initial table load
+        updateTable();
+    </script>
+</body>
+</html>
