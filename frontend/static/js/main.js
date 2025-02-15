@@ -72,7 +72,7 @@ function loadHeader() {
         });
 }
 
-function logout() {
+async function logout() {
     // Clear the stored username and tokens
     localStorage.removeItem('username');
     sessionStorage.removeItem('username');
@@ -140,25 +140,25 @@ async function login(username, password, rememberMe) {
     return data;
 }
 
-async function logout() {
-    const token = localStorage.getItem('accessToken');
-    const response = await fetch('/api/auth/logout/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    });
+// async function logout() {
+//     const token = localStorage.getItem('accessToken');
+//     const response = await fetch('/api/auth/logout/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Bearer ${token}`
+//         }
+//     });
 
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error);
-    }
+//     if (!response.ok) {
+//         const error = await response.json();
+//         throw new Error(error);
+//     }
 
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    return await response.json();
-}
+//     localStorage.removeItem('accessToken');
+//     localStorage.removeItem('refreshToken');
+//     return await response.json();
+// }
 
 async function changePassword(oldPassword, newPassword) {
     const token = localStorage.getItem('accessToken');

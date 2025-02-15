@@ -24,6 +24,26 @@ class MonitorViewSet(viewsets.ModelViewSet):
 
     @swagger_auto_schema(
         method='post',
+        responses={200: 'Pause state updated'},
+        operation_description="Toggle the pause state of the specified monitor."
+    )
+
+    @action(detail=True, methods=['post'])
+    def pause(self, request, pk=None):
+        """
+        Toggle the pause state of a monitor.
+        """
+        monitor = self.get_object()  # Get the monitor instance based on the provided ID
+        monitor.is_paused = not monitor.is_paused  # Toggle the pause state
+        monitor.save()  # Save the updated state
+
+        return Response(
+            {'status': 'Pause state updated', 'is_paused': monitor.is_paused},
+            status=status.HTTP_200_OK
+        )
+
+    @swagger_auto_schema(
+        method='post',
         responses={202: 'Check initiated'},
         operation_description="Initiate a check for the specified monitor."
     )
