@@ -32,7 +32,7 @@
       </div>
     </div>
     <main class="block w-full"></main>
-    <content class="block max-w-4xl mx-auto md:p-12">
+    <content class="block max-w-auto mx-auto md:p-12">
         <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
             <!-- Monitoring Table -->
             <section class="py-16">
@@ -96,137 +96,213 @@
     
     <!-- JavaScript for Dynamic Updates -->
     <script>
-        // Sample URLs to monitor
-        const urls = [
-            { url: "https://example.com", statusHistory: [] },
-            { url: "https://google.com", statusHistory: [] },
-            { url: "https://github.com", statusHistory: [] }
-        ];
-
-        // Function to generate one SVG with 5 rectangles for status history
-        function getStatusIcon(statusHistory) {
-            let rects = "";
-            statusHistory.forEach((entry, index) => {
-                const color = entry.status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
-                const xPosition = index * 4; // Space rectangles horizontally
-                rects += `
-                    <rect 
-                        width="3" 
-                        height="12" 
-                        x="${xPosition}" 
-                        y="0" 
-                        fill="${color}" 
-                        fill-opacity="1" 
-                        rx="1.5" 
-                        aria-expanded="false" 
-                        onclick="toggleTimestamp(this)" 
-                        data-time="${entry.time}"
-                    />
-                `;
-            });
-
-            return `
-                <svg 
-                    width="100" 
-                    height="12" 
-                    viewBox="0 0 100 12" 
-                    fill="none" 
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    ${rects}
-                </svg>
-            `;
+       // Function to fetch all monitors with JWT authentication
+async function fetchMonitors() {
+    try {
+        const jwtToken = localStorage.getItem('accessToken');
+        if (!jwtToken) {
+            throw new Error("JWT token not found in localStorage.");
         }
 
-        // Function to toggle the timestamp visibility
-        function toggleTimestamp(rect) {
-            const expanded = rect.getAttribute("aria-expanded") === "true";
-            rect.setAttribute("aria-expanded", !expanded);
+        const response = await fetch("http://127.0.0.1:8000/monitor/monitors/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${jwtToken}`,
+                "Content-Type": "application/json"
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Error fetching monitors: ${response.status}`);
+        }
+        const monitors = await response.json();
+        return monitors;
+    } catch (error) {
+        console.error("Failed to fetch monitors:", error);
+        return [];
+    }
+}
 
-            const time = rect.getAttribute("data-time");
-            const tooltip = document.getElementById("tooltip");
-            if (!expanded) {
-                tooltip.textContent = time;
-                tooltip.style.display = "block";
-                tooltip.style.left = `${rect.getBoundingClientRect().left + window.scrollX}px`;
-                tooltip.style.top = `${rect.getBoundingClientRect().bottom + window.scrollY}px`;
-            } else {
-                tooltip.style.display = "none";
+// Function to fetch status history for a specific monitor with JWT authentication
+async function fetchStatusHistory(monitorId) {
+    try {
+        const jwtToken = localStorage.getItem('accessToken');
+        if (!jwtToken) {
+            throw new Error("JWT token not found in localStorage.");
+        }
+
+        const response = await fetch(`http://127.0.0.1:8000/monitor/checks/by-monitor/${monitorId}/`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${jwtToken}`,
+                "Content-Type": "application/json"
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Error fetching status history for monitor ID ${monitorId}: ${response.status}`);
+        }
+        const history = await response.json();
+        return history;
+    } catch (error) {
+        console.error("Failed to fetch status history:", error);
+        return [];
+    }
+}
+
+// Function to generate one SVG with 5 rectangles for status history
+function getStatusIcon(statusHistory) {
+    let rects = "";
+    statusHistory.forEach((entry, index) => {
+        const color = entry.status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
+        const xPosition = index * 4; // Space rectangles horizontally
+        rects += `
+            <rect 
+                width="3" 
+                height="12" 
+                x="${xPosition}" 
+                y="0" 
+                fill="${color}" 
+                fill-opacity="1" 
+                rx="1.5" 
+                aria-expanded="false" 
+                onclick="toggleTimestamp(this)" 
+                data-time="${entry.time}"
+            />
+        `;
+    });
+
+    return `
+        <svg 
+            width="20" 
+            height="12" 
+            viewBox="0 0 20 12" 
+            fill="none" 
+            xmlns="http://www.w3.org/2000/svg"
+        >
+            ${rects}
+        </svg>
+    `;
+}
+
+// Function to toggle the timestamp visibility
+function toggleTimestamp(rect) {
+    const expanded = rect.getAttribute("aria-expanded") === "true";
+    rect.setAttribute("aria-expanded", !expanded);
+
+    const time = rect.getAttribute("data-time");
+    const tooltip = document.getElementById("tooltip");
+    if (!expanded) {
+        tooltip.textContent = time;
+        tooltip.style.display = "block";
+        tooltip.style.left = `${rect.getBoundingClientRect().left + window.scrollX}px`;
+        tooltip.style.top = `${rect.getBoundingClientRect().bottom + window.scrollY}px`;
+    } else {
+        tooltip.style.display = "none";
+    }
+}
+
+// Function to update the table dynamically with API data and JWT authentication
+async function updateTableWithAPI() {
+    const tableBody = document.getElementById("url-table-body");
+    tableBody.innerHTML = ""; // Clear existing rows
+
+    try {
+        const monitors = await fetchMonitors();
+
+        // Process each monitor
+        for (const monitor of monitors) {
+            const statusHistory = await fetchStatusHistory(monitor.id);
+
+            // Use only the last 5 statuses
+            const recentHistory = statusHistory.slice(-5);
+
+            // Determine the current status
+            const currentStatus = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].status : "unknown";
+            const currentTime = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].time : "N/A";
+
+            // Generate the row
+            const row = `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${monitor.url}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center space-x-2">
+                            <!-- Hard-coded SVG for current status -->
+                            <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect 
+                                    width="3" 
+                                    height="12" 
+                                    x="0" 
+                                    y="0" 
+                                    fill="${currentStatus === 'up' ? '#3BD671' : '#FF4D4D'}" 
+                                    fill-opacity="1" 
+                                    rx="1.5"
+                                />
+                            </svg>
+                            <span class="${currentStatus === 'up' ? 'text-green-600' : 'text-red-600'} font-medium">
+                                ${currentStatus === "up" ? "Up" : "Down"}
+                            </span>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${currentTime}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex space-x-2">
+                            ${getStatusIcon(recentHistory)} <!-- Call the getStatusIcon function for history -->
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button class="text-blue-600 hover:text-blue-800 font-medium">Pause</button>
+                    </td>
+                </tr>
+            `;
+
+            tableBody.innerHTML += row;
+
+            // Set interval for updating this specific monitor based on its interval property
+            if (monitor.interval && monitor.interval > 0) {
+                setTimeout(() => updateMonitor(monitor.id), monitor.interval * 60 * 1000); // Convert minutes to milliseconds
             }
         }
+    } catch (error) {
+        console.error("Failed to update table with API data:", error);
+    }
+}
 
-        // Function to update the table dynamically
-        function updateTable() {
-            const tableBody = document.getElementById("url-table-body");
-            tableBody.innerHTML = ""; // Clear existing rows
+// Function to update a specific monitor's status
+async function updateMonitor(monitorId) {
+    try {
+        const statusHistory = await fetchStatusHistory(monitorId);
+        const recentHistory = statusHistory.slice(-5);
 
-            urls.forEach((item) => {
-                // Simulate status change
-                const currentStatus = Math.random() > 0.2 ? "up" : "down";
-                item.statusHistory.push({ status: currentStatus, time: new Date().toLocaleTimeString() });
-                if (item.statusHistory.length > 20) {
-                    item.statusHistory.shift(); // Keep only the last 5 statuses
-                }
+        const currentStatus = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].status : "unknown";
+        const currentTime = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].time : "N/A";
 
-                const statusIcons = getStatusIcon(item.statusHistory);
-
-                const row = `
-          <tr>
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.url}</td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex items-center space-x-2">
-                <!-- Hard-coded SVG for current status -->
-                <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect 
-                        width="3" 
-                        height="12" 
-                        x="0" 
-                        y="0" 
-                        fill="${item.statusHistory[item.statusHistory.length - 1].status === 'up' ? '#3BD671' : '#FF4D4D'}" 
-                        fill-opacity="1" 
-                        rx="1.5"
-                    />
-                </svg>
-                <span class="${item.statusHistory[item.statusHistory.length - 1].status === 'up' ? 'text-green-600' : 'text-red-600'} font-medium">
-                  ${item.statusHistory[item.statusHistory.length - 1].status === "up" ? "Up" : "Down"}
-                </span>
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              ${item.statusHistory[item.statusHistory.length - 1].time}
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <div class="flex space-x-2">
-                ${statusIcons}
-              </div>
-            </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <button class="text-blue-600 hover:text-blue-800 font-medium">Pause</button>
-            </td>
-          </tr>
-        `;
-                tableBody.innerHTML += row;
-            });
+        const row = document.querySelector(`#monitor-${monitorId}`);
+        if (row) {
+            row.querySelector("td:nth-child(2) svg rect").setAttribute("fill", currentStatus === "up" ? "#3BD671" : "#FF4D4D");
+            row.querySelector("td:nth-child(2) span").textContent = currentStatus === "up" ? "Up" : "Down";
+            row.querySelector("td:nth-child(2) span").className = currentStatus === "up" ? "text-green-600 font-medium" : "text-red-600 font-medium";
+            row.querySelector("td:nth-child(3)").textContent = currentTime;
+            row.querySelector("td:nth-child(4) div").innerHTML = getStatusIcon(recentHistory);
         }
+    } catch (error) {
+        console.error(`Failed to update monitor ${monitorId}:`, error);
+    }
+}
 
-        // Tooltip for timestamps
-        const tooltip = document.createElement("div");
-        tooltip.id = "tooltip";
-        tooltip.style.position = "absolute";
-        tooltip.style.backgroundColor = "black";
-        tooltip.style.color = "white";
-        tooltip.style.padding = "5px";
-        tooltip.style.borderRadius = "5px";
-        tooltip.style.display = "none";
-        document.body.appendChild(tooltip);
+// Tooltip for timestamps
+const tooltip = document.createElement("div");
+tooltip.id = "tooltip";
+tooltip.style.position = "absolute";
+tooltip.style.backgroundColor = "black";
+tooltip.style.color = "white";
+tooltip.style.padding = "5px";
+tooltip.style.borderRadius = "5px";
+tooltip.style.display = "none";
+document.body.appendChild(tooltip);
 
-        // Simulate monitoring every minute
-        setInterval(() => {
-            updateTable();
-        }, 600000); // Check every 60 seconds (1 minute)
-
-        // Initial table load
-        updateTable();
+// Initial table load with API data
+updateTableWithAPI();
     </script>
 </body>
 </html>
