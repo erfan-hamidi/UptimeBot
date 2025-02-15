@@ -16,7 +16,7 @@ class MonitorViewSet(viewsets.ModelViewSet):
     print()
 
     def get_queryset(self):
-        return Monitor.objects.filter(user=self.request.user)
+        return Monitor.objects.filter(user=self.request.user.id)
 
     def perform_create(self, serializer):
         instance = serializer.save(user=self.request.user)
@@ -39,7 +39,13 @@ class CheckViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Check.objects.filter(monitor__user=self.request.user)
+        return MonitorCheck.objects.filter(monitor__user=self.request.user.id)
+    @action(detail=False, methods=['get'], url_path='by-monitor/(?P<monitor_id>[^/.]+)')
+    def by_monitor(self, request, monitor_id=None):
+        # Validate and filter by monitor_id
+        queryset = self.get_queryset().filter(monitor_id=monitor_id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)        
 
 class CheckAlertViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Alert.objects.all()
@@ -47,4 +53,4 @@ class CheckAlertViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return CheckAlert.objects.filter(check_instance__monitor__user=self.request.user)
+        return Alert.objects.filter(monitor__user=self.request.user.id)

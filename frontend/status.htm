@@ -12,7 +12,7 @@
 </head>
 <body class="bg-gray-100 font-sans">
     <!-- Header -->
-    <header class="flex items-center justify-between bg-gray-700 h-20 px-8 text-white sticky top-0 z-40">
+    <header class="flex items-center justify-between bg-gray-800 h-20 px-8 text-white sticky top-0 z-40">
         <div class="flex items-center">
             <a class="flex items-center gap-2" href="index.htm">
                 <img class="h-6" src="static/logo.svg" alt="Logo" />
@@ -26,29 +26,33 @@
             };
         </script>
     </header>
-<div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
+
+    <div class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
         <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-30 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
       </div>
-    
+    </div>
     <main class="block w-full"></main>
-    <content class="block max-w-3xl mx-auto md:p-12 ">
+    <content class="block max-w-4xl mx-auto md:p-12">
         <div class="bg-white rounded-2xl md:drop-shadow-2xl shadow-black w-full p-8">
             <!-- Monitoring Table -->
             <section class="py-16">
                 <div class="container mx-auto px-6">
                     <h2 class="text-3xl font-bold text-gray-800 mb-8">Monitored URLs</h2>
-                    <div class="pb-4 bg-white ">
-                        <label for="table-search" class="sr-only">Search</label>
-                        <div class="relative mt-1">
-                            <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
-                                <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
-                                </svg>
+                    
+                    <!-- Search Bar -->
+                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+                        <div class="pb-4 bg-white ">
+                            <label for="table-search" class="sr-only">Search</label>
+                            <div class="relative mt-1">
+                                <div class="absolute inset-y-0 rtl:inset-r-0 start-0 flex items-center ps-3 pointer-events-none">
+                                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-300 dark:border-gray-400 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for URLs" style="padding-bottom: 5px;
+                                ">
                             </div>
-                            <input type="text" id="table-search" class="block pt-2 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-300 dark:border-gray-400 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for URLs" style="padding-bottom: 5px;
-">
                         </div>
-                    </div>
                     <!-- Search Bar -->
                     <div class="container overflow-x-auto shadow-md sm:rounded-lg">
                         
@@ -67,7 +71,10 @@
                                         Last Checked
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Response time
+                                        Status History
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
+                                        Action
                                     </th>
                                 </tr>
                             </thead>
@@ -91,56 +98,132 @@
     <script>
         // Sample URLs to monitor
         const urls = [
-            { url: "https://example.com", status: "up", lastChecked: new Date() },
-            { url: "https://google.com", status: "down", lastChecked: new Date() },
-            { url: "https://github.com", status: "up", lastChecked: new Date() },
-            
+            { url: "https://example.com", statusHistory: [] },
+            { url: "https://google.com", statusHistory: [] },
+            { url: "https://github.com", statusHistory: [] }
         ];
 
-        // Function to generate the SVG rectangle
-        function getStatusIcon(status) {
-            const color = status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
+        // Function to generate one SVG with 5 rectangles for status history
+        function getStatusIcon(statusHistory) {
+            let rects = "";
+            statusHistory.forEach((entry, index) => {
+                const color = entry.status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
+                const xPosition = index * 4; // Space rectangles horizontally
+                rects += `
+                    <rect 
+                        width="3" 
+                        height="12" 
+                        x="${xPosition}" 
+                        y="0" 
+                        fill="${color}" 
+                        fill-opacity="1" 
+                        rx="1.5" 
+                        aria-expanded="false" 
+                        onclick="toggleTimestamp(this)" 
+                        data-time="${entry.time}"
+                    />
+                `;
+            });
+
             return `
-        <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="3" height="12" x="0" y="0" fill="${color}" fill-opacity="1" rx="1.5" aria-expanded="true" />
-        </svg>
-      `;
+                <svg 
+                    width="100" 
+                    height="12" 
+                    viewBox="0 0 100 12" 
+                    fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    ${rects}
+                </svg>
+            `;
+        }
+
+        // Function to toggle the timestamp visibility
+        function toggleTimestamp(rect) {
+            const expanded = rect.getAttribute("aria-expanded") === "true";
+            rect.setAttribute("aria-expanded", !expanded);
+
+            const time = rect.getAttribute("data-time");
+            const tooltip = document.getElementById("tooltip");
+            if (!expanded) {
+                tooltip.textContent = time;
+                tooltip.style.display = "block";
+                tooltip.style.left = `${rect.getBoundingClientRect().left + window.scrollX}px`;
+                tooltip.style.top = `${rect.getBoundingClientRect().bottom + window.scrollY}px`;
+            } else {
+                tooltip.style.display = "none";
+            }
         }
 
         // Function to update the table dynamically
         function updateTable() {
             const tableBody = document.getElementById("url-table-body");
             tableBody.innerHTML = ""; // Clear existing rows
+
             urls.forEach((item) => {
+                // Simulate status change
+                const currentStatus = Math.random() > 0.2 ? "up" : "down";
+                item.statusHistory.push({ status: currentStatus, time: new Date().toLocaleTimeString() });
+                if (item.statusHistory.length > 20) {
+                    item.statusHistory.shift(); // Keep only the last 5 statuses
+                }
+
+                const statusIcons = getStatusIcon(item.statusHistory);
+
                 const row = `
           <tr>
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.url}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center space-x-2">
-                ${getStatusIcon(item.status)}
-                <span class="${item.status === 'up' ? 'text-green-600' : 'text-red-600'} font-medium">
-                  ${item.status === "up" ? "Up" : "Down"}
+                <!-- Hard-coded SVG for current status -->
+                <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect 
+                        width="3" 
+                        height="12" 
+                        x="0" 
+                        y="0" 
+                        fill="${item.statusHistory[item.statusHistory.length - 1].status === 'up' ? '#3BD671' : '#FF4D4D'}" 
+                        fill-opacity="1" 
+                        rx="1.5"
+                    />
+                </svg>
+                <span class="${item.statusHistory[item.statusHistory.length - 1].status === 'up' ? 'text-green-600' : 'text-red-600'} font-medium">
+                  ${item.statusHistory[item.statusHistory.length - 1].status === "up" ? "Up" : "Down"}
                 </span>
               </div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-              ${item.lastChecked.toLocaleTimeString()}
+              ${item.statusHistory[item.statusHistory.length - 1].time}
             </td>
-            
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="flex space-x-2">
+                ${statusIcons}
+              </div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <button class="text-blue-600 hover:text-blue-800 font-medium">Pause</button>
+            </td>
           </tr>
         `;
                 tableBody.innerHTML += row;
             });
         }
 
+        // Tooltip for timestamps
+        const tooltip = document.createElement("div");
+        tooltip.id = "tooltip";
+        tooltip.style.position = "absolute";
+        tooltip.style.backgroundColor = "black";
+        tooltip.style.color = "white";
+        tooltip.style.padding = "5px";
+        tooltip.style.borderRadius = "5px";
+        tooltip.style.display = "none";
+        document.body.appendChild(tooltip);
+
         // Simulate monitoring every minute
         setInterval(() => {
-            urls.forEach((item) => {
-                item.status = Math.random() > 0.2 ? "up" : "down"; // Randomly set status (80% chance of being "up")
-                item.lastChecked = new Date(); // Update last checked time
-            });
-            updateTable(); // Refresh the table
-        }, 60000); // Check every 60 seconds (1 minute)
+            updateTable();
+        }, 600000); // Check every 60 seconds (1 minute)
 
         // Initial table load
         updateTable();
