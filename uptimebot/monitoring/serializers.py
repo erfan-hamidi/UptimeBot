@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import UserProfile, Monitor, MonitorCheck, Alert, Notification
+from .models import UserProfile, Monitor, MonitorCheck, Alert, Notification, AlertType
 
 
 # class MonitorSerializer(serializers.ModelSerializer):
@@ -25,10 +25,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'phone_number', 'email_verified', 'phone_verified']
 
 class MonitorSerializer(serializers.ModelSerializer):
+    alert_types = serializers.PrimaryKeyRelatedField(
+        queryset=AlertType.objects.all(),
+        many=True
+    )
+
     class Meta:
         model = Monitor
-        fields = ['id', 'user', 'name', 'url', 'type', 'interval', 'status', 'last_checked']
-        read_only_fields = ['user', 'status', 'last_checked'] 
+        fields = ['id', 'user', 'name', 'url', 'type', 'interval', 'status', 'last_checked', 'is_paused', 'alert_types']
+        read_only_fields = ['user', 'status', 'last_checked', 'is_paused'] 
 
 class MonitorCheckSerializer(serializers.ModelSerializer):
     class Meta:
@@ -44,3 +49,8 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ['id', 'user', 'alert', 'sent_at', 'read']
+
+class AlertTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AlertType
+        fields = ['id', 'name']

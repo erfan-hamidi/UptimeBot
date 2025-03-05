@@ -457,4 +457,62 @@ function getPasswordStrength(password) {
     };
 }
 
+document.getElementById('monitor-form').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent the default form submission
 
+    // Retrieve the JWT token from sessionStorage or localStorage
+    const accessToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        alert('Access token not found. Please log in.');
+        return;
+    }
+
+    // Collect form data
+    const formData = {
+        name: document.getElementById('monitor-name').value,
+        type: document.getElementById('monitor-type').value,
+        url: document.getElementById('monitor-url').value,
+        interval: document.getElementById('check-interval').value,
+        alert_types: getSelectedAlertTypes(),
+    };
+
+    // Send the data via fetch API
+    fetch('http://127.0.0.1:8000/monitors/', { // Use the specified endpoint
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`, // Use the retrieved token
+        },
+        body: JSON.stringify(formData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Monitor created successfully:', data);
+        alert('Monitor created successfully!');
+    })
+    .catch(error => {
+        console.error('There was a problem creating the monitor:', error);
+        alert('Failed to create monitor. Please check the console for details.');
+    });
+});
+
+// Helper function to get selected alert types
+function getSelectedAlertTypes() {
+    const alertTypes = [];
+    if (document.getElementById('alert-email').checked) {
+        alertTypes.push(1); // Replace 1 with the ID of the "email" AlertType
+    }
+    if (document.getElementById('alert-phone').checked) {
+        alertTypes.push(2); // Replace 2 with the ID of the "phone" AlertType
+    }
+    if (document.getElementById('alert-sms').checked) {
+        alertTypes.push(3); // Replace 3 with the ID of the "sms" AlertType
+    }
+    return alertTypes;
+}
