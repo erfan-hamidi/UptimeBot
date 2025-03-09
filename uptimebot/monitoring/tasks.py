@@ -10,9 +10,6 @@ import os
 
 @shared_task
 def check_monitor(monitor_id):
-    """
-    Task to check the status of a single monitor.
-    """
     try:
         monitor = Monitor.objects.get(id=monitor_id)
     except Monitor.DoesNotExist:
@@ -30,10 +27,7 @@ def check_monitor(monitor_id):
 
     try:
         if monitor.type in ['http', 'https']:
-            # HTTP/HTTPS Monitor
-            url = monitor.url
-            if monitor.type == 'https':
-                url = url.replace('http://', 'https://', 1)  # Ensure HTTPS
+            url = monitor.url.replace('http://', 'https://', 1) if monitor.type == 'https' else monitor.url
             response = requests.get(url, timeout=10)
             status_code = response.status_code
             response_time = response.elapsed.total_seconds()
@@ -52,8 +46,8 @@ def check_monitor(monitor_id):
                 raise ValueError("Invalid URL format for port monitoring. Use 'hostname:port'.")
             host, port = parts[0], int(parts[1])
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.settimeout(5)  # 5-second timeout
-            result = sock.connect_ex((host, port))
+            sock.settimeout(5)
+            result = sock.connect_ex((host, int(port)))
             sock.close()
             status = 'up' if result == 0 else 'down'
 
@@ -77,9 +71,12 @@ def check_monitor(monitor_id):
 
     print(f"Monitor {monitor_id} status: {status}")
 
-    # Schedule the task to run again after the monitor's interval
-    check_monitor.apply_async(args=[monitor_id], countdown=monitor.interval * 60)  # Convert minutes to seconds
+    # Trigger alert if the monitor is down
+    if status == 'down':
+        trigger_alert.delay(monitor.id)  # Queue the alert task
 
+    # Schedule the next check
+    check_monitor.apply_async(args=[monitor_id], countdown=monitor.interval * 60)
 
 @shared_task
 def start_monitor_tasks():
@@ -91,17 +88,56 @@ def start_monitor_tasks():
         check_monitor.delay(monitor.id)  # Start the monitoring task for each monitor
 
 
+logger = logging.getLogger(__name__)
 
 @shared_task
 def trigger_alert(monitor_id):
-    """
-    Task to trigger an alert if a monitor is down.
-    """
-    from .models import Monitor, Alert
-    monitor = Monitor.objects.get(id=monitor_id)
-    message = f"Monitor {monitor.name} is down!"
-    Alert.objects.create(
-        monitor=monitor,
-        alert_type='email',  # You can customize this #TODO
-        message=message,
+    try:
+        monitor = Monitor.objects.get(id=monitor_id)
+    except Monitor.DoesNotExist:
+        logger.error(f"Monitor {monitor_id} does not exist.")
+        return
+
+    # Build the alert message
+    message = (
+        f"Monitor '{monitor.name}' is DOWN!\n"
+        f"URL: {monitor.url}\n"
+        f"Status: {monitor.status}\n"
+        f"Last Checked: {monitor.last_checked}\n"
+        f"Error: {monitor.last_check.error_message if hasattr(monitor, 'last_check') else 'N/A'}"
     )
+
+    # Iterate through all alert types associated with the monitor
+    for alert_type in monitor.alert_types.all():
+        try:
+            if alert_type.name == 'alertemail':
+                # Send an email alert
+                send_email_alert(monitor, message)
+
+            # elif alert_type.name == 'alertsms':
+            #     # Send an SMS alert (requires integration with an SMS gateway)
+            #     send_sms_alert(monitor, message)
+
+            # elif alert_type.name == 'alertphone':
+            #     # Trigger a webhook alert (requires integration with a webhook service)
+            #     trigger__alert(monitor, message)
+
+            # Create an alert record for this specific alert type
+            Alert.objects.create(
+                monitor=monitor,
+                alert_type=alert_type.name,
+                message=message,
+            )
+        except Exception as e:
+            logger.error(f"Failed to send {alert_type.name} alert for monitor {monitor_id}: {str(e)}")
+
+
+def send_email_alert(monitor, message):
+    send_mail(
+        subject=f"ALERT: {monitor.name} is DOWN",
+        message=message,
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[monitor.user.email],  # Send to the user's email
+        fail_silently=False,
+    )
+    logger.info(f"Email alert sent for monitor {monitor.id}.")
