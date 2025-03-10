@@ -94,12 +94,6 @@ class MonitorCheck(models.Model):
         return f"{self.monitor.name} - {self.checked_at}"
 
 class Alert(models.Model):
-    ALERT_TYPES = (
-        ('email', 'Email'),
-        ('sms', 'SMS'),
-        ('push', 'Push Notification'),
-    )
-
     monitor = models.ForeignKey(Monitor, on_delete=models.CASCADE)
     alert_type = models.ForeignKey(AlertType, on_delete=models.CASCADE)  # Reference AlertType
     sent_at = models.DateTimeField(auto_now_add=True)

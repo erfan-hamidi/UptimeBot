@@ -34,13 +34,23 @@ class MonitorViewSet(viewsets.ModelViewSet):
         Toggle the pause state of a monitor.
         """
         monitor = self.get_object()  # Get the monitor instance based on the provided ID
-        monitor.is_paused = not monitor.is_paused  # Toggle the pause state
-        monitor.save()  # Save the updated state
+        if monitor.is_paused:
+            # Resume the monitor
+            monitor.is_paused = False
+            monitor.save()
 
-        return Response(
-            {'status': 'Pause state updated', 'is_paused': monitor.is_paused},
-            status=status.HTTP_200_OK
-        )
+            # Reschedule the monitor check
+            check_monitor.apply_async(
+                args=[monitor.id],
+                countdown=monitor.interval * 60  # Schedule the next check after the interval
+            )
+            return Response({'status': 'Monitor resumed'}, status=status.HTTP_200_OK)
+
+        else:
+            # Pause the monitor
+            monitor.is_paused = True
+            monitor.save()
+            return Response({'status': 'Monitor paused'}, status=status.HTTP_200_OK)
 
     @swagger_auto_schema(
         method='post',

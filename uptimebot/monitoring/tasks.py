@@ -1,12 +1,15 @@
-# 
+from urllib.parse import urlparse
 from celery import shared_task
 from celery.schedules import crontab
 #from celery import periodic_task
 from django.utils import timezone
-from .models import Monitor, MonitorCheck
+from .models import Monitor, MonitorCheck, Alert,AlertType
 import requests
 import socket
-import os
+import os, logging
+from django.core.mail import send_mail
+from django.conf import settings
+
 
 @shared_task
 def check_monitor(monitor_id):
@@ -17,7 +20,7 @@ def check_monitor(monitor_id):
 
     # Check if the monitor is paused
     if monitor.is_paused:
-        print(f"Monitor {monitor_id} is paused. Skipping...")
+        print(f"Monitor {monitor.url} is paused. Skipping...")
         return
 
     status_code = None
@@ -41,13 +44,15 @@ def check_monitor(monitor_id):
 
         elif monitor.type == 'port':
             # Port Monitor
-            parts = monitor.url.split(':')
+            parsed_url = urlparse(monitor.url)
+            ports = parsed_url.netloc.split(':')
+            parts= list(ports)
             if len(parts) != 2:
                 raise ValueError("Invalid URL format for port monitoring. Use 'hostname:port'.")
             host, port = parts[0], int(parts[1])
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             sock.settimeout(5)
-            result = sock.connect_ex((host, int(port)))
+            result = sock.connect_ex((host, port))
             sock.close()
             status = 'up' if result == 0 else 'down'
 
@@ -56,7 +61,7 @@ def check_monitor(monitor_id):
         error_message = str(e)
 
     # Create a MonitorCheck record
-    MonitorCheck.objects.create(
+    check = MonitorCheck.objects.create(
         monitor=monitor,
         status_code=status_code,
         response_time=response_time,
@@ -69,11 +74,11 @@ def check_monitor(monitor_id):
     monitor.status = status
     monitor.save()
 
-    print(f"Monitor {monitor_id} status: {status}")
+    print(f"Monitor {monitor.url} status: {status}")
 
     # Trigger alert if the monitor is down
     if status == 'down':
-        trigger_alert.delay(monitor.id)  # Queue the alert task
+        trigger_alert.delay(monitor.id, check.id)  # Queue the alert task
 
     # Schedule the next check
     check_monitor.apply_async(args=[monitor_id], countdown=monitor.interval * 60)
@@ -91,20 +96,21 @@ def start_monitor_tasks():
 logger = logging.getLogger(__name__)
 
 @shared_task
-def trigger_alert(monitor_id):
+def trigger_alert(monitor_id, check):
     try:
         monitor = Monitor.objects.get(id=monitor_id)
+        monitorcheck = MonitorCheck.objects.get(id=check)
     except Monitor.DoesNotExist:
         logger.error(f"Monitor {monitor_id} does not exist.")
         return
-
     # Build the alert message
     message = (
         f"Monitor '{monitor.name}' is DOWN!\n"
         f"URL: {monitor.url}\n"
         f"Status: {monitor.status}\n"
+        f"Status Code: {monitorcheck.status_code}\n"
         f"Last Checked: {monitor.last_checked}\n"
-        f"Error: {monitor.last_check.error_message if hasattr(monitor, 'last_check') else 'N/A'}"
+        #f"Error: {monitorcheck.error_message if hasattr(monitor, 'last_check') else 'N/A'}"
     )
 
     # Iterate through all alert types associated with the monitor
@@ -125,7 +131,7 @@ def trigger_alert(monitor_id):
             # Create an alert record for this specific alert type
             Alert.objects.create(
                 monitor=monitor,
-                alert_type=alert_type.name,
+                alert_type=alert_type,
                 message=message,
             )
         except Exception as e:

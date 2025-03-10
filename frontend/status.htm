@@ -99,7 +99,7 @@
        // Function to fetch all monitors with JWT authentication
 async function fetchMonitors() {
     try {
-        const jwtToken = localStorage.getItem('accessToken');
+        const jwtToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
         if (!jwtToken) {
             throw new Error("JWT token not found in localStorage.");
         }
@@ -125,9 +125,9 @@ async function fetchMonitors() {
 // Function to fetch status history for a specific monitor with JWT authentication
 async function fetchStatusHistory(monitorId) {
     try {
-        const jwtToken = localStorage.getItem('accessToken');
+        const jwtToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
         if (!jwtToken) {
-            throw new Error("JWT token not found in localStorage.");
+            throw new Error("JWT token not found.");
         }
 
         const response = await fetch(`http://127.0.0.1:8000/monitor/checks/by-monitor/${monitorId}/`, {
@@ -150,6 +150,7 @@ async function fetchStatusHistory(monitorId) {
 
 // Function to generate one SVG with 5 rectangles for status history
 function getStatusIcon(statusHistory) {
+    
     let rects = "";
     statusHistory.forEach((entry, index) => {
         const color = entry.status === "up" ? "#3BD671" : "#FF4D4D"; // Green for up, Red for down
@@ -165,16 +166,16 @@ function getStatusIcon(statusHistory) {
                 rx="1.5" 
                 aria-expanded="false" 
                 onclick="toggleTimestamp(this)" 
-                data-time="${entry.time}"
+                data-time="${entry.checked_at}"
             />
         `;
     });
 
     return `
         <svg 
-            width="20" 
+            width="100" 
             height="12" 
-            viewBox="0 0 20 12" 
+            viewBox="0 0 100 12" 
             fill="none" 
             xmlns="http://www.w3.org/2000/svg"
         >
@@ -189,9 +190,11 @@ function toggleTimestamp(rect) {
     rect.setAttribute("aria-expanded", !expanded);
 
     const time = rect.getAttribute("data-time");
+    const date = new Date(time)
+    const currentTime = date.toISOString().split('T')[1].split('.')[0];
     const tooltip = document.getElementById("tooltip");
     if (!expanded) {
-        tooltip.textContent = time;
+        tooltip.textContent = currentTime;
         tooltip.style.display = "block";
         tooltip.style.left = `${rect.getBoundingClientRect().left + window.scrollX}px`;
         tooltip.style.top = `${rect.getBoundingClientRect().bottom + window.scrollY}px`;
@@ -211,14 +214,14 @@ async function updateTableWithAPI() {
         // Process each monitor
         for (const monitor of monitors) {
             const statusHistory = await fetchStatusHistory(monitor.id);
-
             // Use only the last 5 statuses
-            const recentHistory = statusHistory.slice(-5);
+            const recentHistory = statusHistory.slice(-20);
 
             // Determine the current status
             const currentStatus = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].status : "unknown";
-            const currentTime = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].time : "N/A";
-
+            const date = new Date(monitor.last_checked)
+            const currentTime = date.toISOString().split('T')[1].split('.')[0];
+            const buttonText = monitor.is_paused ? "Resume" : "Pause";
             // Generate the row
             const row = `
                 <tr>
@@ -226,7 +229,7 @@ async function updateTableWithAPI() {
                     <td class="px-6 py-4 whitespace-nowrap">
                         <div class="flex items-center space-x-2">
                             <!-- Hard-coded SVG for current status -->
-                            <svg width="12" height="12" viewBox="0 0 3 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg width="100" height="12" viewBox="0 0 100 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect 
                                     width="3" 
                                     height="12" 
@@ -251,16 +254,16 @@ async function updateTableWithAPI() {
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        <button class="text-blue-600 hover:text-blue-800 font-medium">Pause</button>
-                    </td>
-                </tr>
-            `;
+            <button 
+                class="text-blue-600 hover:text-blue-800 font-medium" onclick="toggleMonitorPause(this)"
+                data-monitor-id="${monitor.id}">${buttonText}</button></td>
+                </tr>`;
 
             tableBody.innerHTML += row;
 
             // Set interval for updating this specific monitor based on its interval property
             if (monitor.interval && monitor.interval > 0) {
-                setTimeout(() => updateMonitor(monitor.id), monitor.interval * 60 * 1000); // Convert minutes to milliseconds
+                setTimeout(() => updateMonitor(monitor.id), monitor.interval * 50 * 1000); // Convert minutes to milliseconds
             }
         }
     } catch (error) {
@@ -272,7 +275,7 @@ async function updateTableWithAPI() {
 async function updateMonitor(monitorId) {
     try {
         const statusHistory = await fetchStatusHistory(monitorId);
-        const recentHistory = statusHistory.slice(-5);
+        const recentHistory = statusHistory.slice(-20);
 
         const currentStatus = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].status : "unknown";
         const currentTime = recentHistory.length > 0 ? recentHistory[recentHistory.length - 1].time : "N/A";
@@ -303,6 +306,52 @@ document.body.appendChild(tooltip);
 
 // Initial table load with API data
 updateTableWithAPI();
+
+function toggleMonitorPause(button) {
+    // Prevent default behavior (if any)
+    event.preventDefault();
+
+    // Get the monitor ID from the button's data attribute
+    const monitorId = button.getAttribute('data-monitor-id');
+    const buttonText = button.textContent.trim().toLowerCase(); // Get the current button text
+    const jwtToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+        if (!jwtToken) {
+            throw new Error("JWT token not found.");
+        }
+    // Send a POST request to toggle the pause state
+    fetch(`http://127.0.0.1:8000/monitor/monitors/${monitorId}/pause/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": `Bearer ${jwtToken}`,
+        },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status} - ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(result => {
+        // Update the button text based on the response
+        if (result.is_paused) {
+            button.textContent = 'Resume';
+        } else {
+            button.textContent = 'Pause';
+        }
+    })
+    .catch(error => {
+        console.error('Failed to toggle monitor pause state:', error);
+        alert('An error occurred while toggling the monitor.');
+    });
+}
+
+// Function to retrieve the CSRF token from cookies (for Django)
+function getCSRFToken() {
+    const csrfCookieName = 'csrftoken';
+    const cookies = document.cookie.split('; ').find(row => row.startsWith(csrfCookieName));
+    return cookies ? cookies.split('=')[1] : null;
+}
     </script>
 </body>
 </html>

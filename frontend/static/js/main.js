@@ -36,6 +36,7 @@ async function register(username, password, email) {
     const data = await response.json();
     localStorage.setItem('accessToken', data.access);
     localStorage.setItem('refreshToken', data.refresh);
+    localStorage.setItem('username', username); 
     return data;
 }
 
@@ -87,24 +88,25 @@ async function logout() {
 
 
 document.getElementById('login-form').addEventListener('submit', async (event) => {
-    event.preventDefault(); // Prevent the default form submission
+event.preventDefault(); // Prevent the default form submission
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    const rememberMe = document.getElementById('rememberMe').checked;
+const email = document.getElementById('email').value;
+const password = document.getElementById('password').value;
+const rememberMe = document.getElementById('rememberMe').checked;
 
-    try {
-        const data = await login(email, password, rememberMe);
-        console.log("Login successful:", data);
+try {
+const data = await login(email, password, rememberMe);
+console.log("Login successful:", data);
 
-        // Redirect to dashboard or another page
-        window.location.href = "login.htm";
-    } catch (error) {
-        console.error("Login failed:", error.message);
+// Redirect to dashboard or another page
+window.location.href = "monitor.htm";
 
-        // Display an error message to the user
-        alert("Login failed: " + error.message);
-    }
+} catch (error) {
+console.error("Login failed:", error.message);
+
+// Display an error message to the user
+alert("Login failed: " + error.message);
+}
 });
 
 async function login(username, password, rememberMe) {
@@ -202,27 +204,6 @@ async function resetPassword(email) {
     return await response.json();
 }
 
-async function confirmResetPassword(uid, token, newPassword) {
-    const response = await fetch('/api/auth/password/reset/confirm/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            uid: uid,
-            token: token,
-            new_password1: newPassword,
-            new_password2: newPassword
-        })
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error);
-    }
-
-    return await response.json();
-}
 
 async function verifyEmail(key) {
     const response = await fetch('/api/auth/registration/verify-email/', {
@@ -243,23 +224,6 @@ async function verifyEmail(key) {
     return await response.json();
 }
 
-async function getUser() {
-    const token = localStorage.getItem('accessToken');
-    const response = await fetch('/api/auth/user/', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error);
-    }
-
-    return await response.json();
-}
 
 async function fetchWithAuth(url, options = {}) {
     let token = localStorage.getItem('accessToken');
@@ -284,53 +248,23 @@ async function fetchWithAuth(url, options = {}) {
 }
 
 // Add the list to the registration form
-const registerForm = document.getElementById('register-form');
-registerForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formdata = new FormData(registerForm);
-    const username = formdata.get('username');
-    const password1 = formdata.get('password1');
-    const password2 = formdata.get('password2');
-    const email = formdata.get('email');
-    const passwordStrengthMessages = document.getElementById('password-strength-messages');
-    passwordStrengthMessages.style.display = 'none';
-    if(password1 !== password2) {
-        passwordStrengthMessages.innerHTML = '<li style="color:red;">Passwords do not match!</li>';
-        passwordStrengthMessages.style.display = 'block';
-        return
-    }
-
-    const passwordStrength = getPasswordStrength(password1);
-    if (!passwordStrength.strength) {
-        passwordStrengthMessages.innerHTML = passwordStrength.message; // Update messages
-        passwordStrengthMessages.style.display = 'block';
-        return; // Prevent form submission if password is weak
-    }
-
-    try {
-        const data = await register(username, password1, email);
-        console.log('Registered:', data);
-    } catch (error) {
-        console.error('Error registering:', error);
-    }
-});
 
 
 const loginForm = document.getElementById('login-form');
 loginForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formdata = new FormData(loginForm);
-    const username = formdata.get('login');
-    const password = formdata.get('password');
-    const rememberMe = formdata.get('remember') === 'on';
-    console.log('sas',rememberMe)
-    try {
-        const data = await login(username, password, rememberMe);
-        console.log('Logged in:', data);
-       // window.location.href ='login.htm';
-    } catch (error) {
-        console.error('Error logging in:', error);
-    }
+e.preventDefault();
+const formdata = new FormData(loginForm);
+const username = formdata.get('login');
+const password = formdata.get('password');
+const rememberMe = formdata.get('remember') === 'on';
+console.log('sas',rememberMe)
+try {
+const data = await login(username, password, rememberMe);
+console.log('Logged in:', data);
+// window.location.href ='login.htm';
+} catch (error) {
+console.error('Error logging in:', error);
+}
 });
 
 async function refreshToken() {
@@ -457,50 +391,7 @@ function getPasswordStrength(password) {
     };
 }
 
-document.getElementById('monitor-form').addEventListener('submit', function (event) {
-    event.preventDefault(); // Prevent the default form submission
 
-    // Retrieve the JWT token from sessionStorage or localStorage
-    const accessToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
-
-    if (!accessToken) {
-        alert('Access token not found. Please log in.');
-        return;
-    }
-
-    // Collect form data
-    const formData = {
-        name: document.getElementById('monitor-name').value,
-        type: document.getElementById('monitor-type').value,
-        url: document.getElementById('monitor-url').value,
-        interval: document.getElementById('check-interval').value,
-        alert_types: getSelectedAlertTypes(),
-    };
-
-    // Send the data via fetch API
-    fetch('http://127.0.0.1:8000/monitors/', { // Use the specified endpoint
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${accessToken}`, // Use the retrieved token
-        },
-        body: JSON.stringify(formData),
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Monitor created successfully:', data);
-        alert('Monitor created successfully!');
-    })
-    .catch(error => {
-        console.error('There was a problem creating the monitor:', error);
-        alert('Failed to create monitor. Please check the console for details.');
-    });
-});
 
 // Helper function to get selected alert types
 function getSelectedAlertTypes() {
@@ -514,5 +405,6 @@ function getSelectedAlertTypes() {
     if (document.getElementById('alert-sms').checked) {
         alertTypes.push(3); // Replace 3 with the ID of the "sms" AlertType
     }
+    console.log(alertTypes)
     return alertTypes;
 }

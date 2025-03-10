@@ -91,7 +91,7 @@
                     <!-- Check Interval -->
                     <div class="element">
                         <label for="check-interval" class="block text-gray-700 font-bold mb-2">Check Interval:</label>
-                        <input type="text" id="monitor-url" name="monitor-url" placeholder="1 min to 1500 min" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                        <input type="text" id="check-interval" name="check-interval" placeholder="1 min to 1500 min" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
                     </div>
                 
                     <!-- Alert Contacts -->
@@ -148,6 +148,51 @@
         <!-- Footer content goes here -->
     </footer>
     <script src="static/js/main.js"></script>
+    <script>document.getElementById('monitor-form').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
+    
+        // Retrieve the JWT token from sessionStorage or localStorage
+        const accessToken = sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+    
+        if (!accessToken) {
+            alert('Access token not found. Please log in.');
+            return;
+        }
+    
+        // Collect form data
+        const formData = {
+            name: document.getElementById('monitor-name').value,
+            type: document.getElementById('monitor-type').value,
+            url: document.getElementById('monitor-url').value,
+            interval: document.getElementById('check-interval').value,
+            alert_types: [1],
+        };
+        console.log(formData)
+        // Send the data via fetch API
+        fetch('http://127.0.0.1:8000/monitor/monitors/', { // Use the specified endpoint
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`, // Use the retrieved token
+            },
+            body: JSON.stringify(formData),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Monitor created successfully:', data);
+            alert('Monitor created successfully!');
+            window.location.href = "status.htm";
+        })
+        .catch(error => {
+            console.error('There was a problem creating the monitor:', error);
+            alert('Failed to create monitor. Please check the console for details.');
+        });
+    });</script>
 </body>
 
 </body>

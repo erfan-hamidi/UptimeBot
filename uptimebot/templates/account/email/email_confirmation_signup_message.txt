@@ -1,0 +1,8 @@
+Hello from UptimeBot!
+
+You're receiving this email because user e has given your email address to register an account on UptimeBot.
+
+To confirm this is correct, go to {{ activate_url }}
+
+Thank you for using UptimeBot!
+UptimeBot

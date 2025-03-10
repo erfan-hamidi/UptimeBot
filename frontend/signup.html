@@ -70,6 +70,38 @@
     <div class="absolute  inset-x-0 top-[calc(100%-13rem)] z-[-1] transform overflow-hidden blur-3xl sm:top-[calc(100%-45rem)]" aria-hidden="true">
         <div class="relative left-[calc(50%+3rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 bg-gradient-to-tr from-[#ff80b5] to-[#9089fc] opacity-50 z-[-1] sm:left-[calc(50%+36rem)] sm:w-[72.1875rem]" style="clip-path: polygon(74.1% 44.1%, 100% 61.6%, 97.5% 26.9%, 85.5% 0.1%, 80.7% 2%, 72.5% 32.5%, 60.2% 62.4%, 52.4% 68.1%, 47.5% 58.3%, 45.2% 34.5%, 27.5% 76.7%, 0.1% 64.9%, 17.9% 100%, 27.6% 76.8%, 76.1% 97.7%, 74.1% 44.1%)"></div>
       </div>
+    <script> const registerForm = document.getElementById('register-form');
+    registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formdata = new FormData(registerForm);
+        const username = formdata.get('username');
+        const password1 = formdata.get('password1');
+        const password2 = formdata.get('password2');
+        const email = formdata.get('email');
+        const passwordStrengthMessages = document.getElementById('password-strength-messages');
+        passwordStrengthMessages.style.display = 'none';
+        if(password1 !== password2) {
+            passwordStrengthMessages.innerHTML = '<li style="color:red;">Passwords do not match!</li>';
+            passwordStrengthMessages.style.display = 'block';
+            return
+        }
+    
+        const passwordStrength = getPasswordStrength(password1);
+        if (!passwordStrength.strength) {
+            passwordStrengthMessages.innerHTML = passwordStrength.message; // Update messages
+            passwordStrengthMessages.style.display = 'block';
+            return; // Prevent form submission if password is weak
+        }
+    
+        try {
+            const data = await register(username, password1, email);
+            console.log('Registered:', data);
+            window.location.href = "monitor.htm";
+        } catch (error) {
+            console.error('Error registering:', error);
+        }
+    });
+    </script>
     <script src="static/js/main.js"></script>
 </body>
 
