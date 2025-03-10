@@ -9,4 +9,6 @@ router.register(r'check-alert', views.CheckAlertViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('acounts/login/', views.custom_confirmation_page, name='custom_confirmation'),
+
 ]

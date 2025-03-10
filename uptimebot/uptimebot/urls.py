@@ -22,6 +22,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import permissions
 from django.conf import settings
+from monitoring import views
 from allauth.account.views import ConfirmEmailView
 from drf_spectacular.views import SpectacularAPIView
 schema_view = get_schema_view(
@@ -43,6 +44,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('monitor/', include('monitoring.urls')),
     path('account/', include('dj_rest_auth.urls')),
+    path('accounts/login/', views.custom_confirmation_page, name='custom_confirmation'),
     path('account/registration/', include('dj_rest_auth.registration.urls')),
     path('confirm-email/<str:key>/', ConfirmEmailView.as_view(),
          name='account_confirm_email'),

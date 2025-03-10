@@ -333,10 +333,12 @@ function toggleMonitorPause(button) {
         return response.json();
     })
     .then(result => {
+        console.log(result)
         // Update the button text based on the response
-        if (result.is_paused) {
+        if (result.status = "Monitor paused" ) {
             button.textContent = 'Resume';
-        } else {
+        } 
+        if (result.status = "Monitor resumed"){
             button.textContent = 'Pause';
         }
     })

@@ -84,3 +84,9 @@ class CheckAlertViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         return Alert.objects.filter(monitor__user=self.request.user.id)
+
+
+from django.shortcuts import render
+
+def custom_confirmation_page(request):
+    return render(request, 'frontend/monitor.htm')
